@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 project(trajopt)
 
-set(TRAJOPT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/trajopt)
+set(TRAJOPT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/trajopt) #This is needed for catkin make
+#set(TRAJOPT_SOURCE_DIR ${CMAKE_SOURCE_DIR}) # But this is required for catkin_build
+#set(GUROBI_HOME /opt/gurobi510/linux64)
 
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 set(CMAKE_CXX_FLAGS "-march=native -mno-avx ${CMAKE_CXX_FLAGS}")
 
 list(APPEND CMAKE_MODULE_PATH "${TRAJOPT_SOURCE_DIR}/cmake/modules")
+
 
 option(DEVEL_MODE "build with compiler more errors" OFF)
 if (DEVEL_MODE) 

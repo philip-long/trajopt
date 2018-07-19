@@ -59,6 +59,9 @@ void RegisterMakers() {
   TermInfo::RegisterMaker("joint_vel_limits", &JointVelConstraintInfo::create);
   TermInfo::RegisterMaker("differential_pose", &CartDDCntInfo::create);
 
+  // Philip Adding
+ // TermInfo::RegisterMaker("virtual_guide", &CartGuideCntInfo::create);
+
   gRegisteredMakers = true;
 }
 
@@ -279,7 +282,6 @@ TrajOptProbPtr ConstructProblem(const ProblemConstructionInfo& pci) {
       prob->addLinearConstraint(exprSub(AffExpr(prob->m_traj_vars(0,j)), cur_dofvals[j]), EQ);
     }
   }
-
   if (!bi.dofs_fixed.empty()) {
     BOOST_FOREACH(const int& dof_ind, bi.dofs_fixed) {
       for (int i=1; i < prob->GetNumSteps(); ++i) {
@@ -287,7 +289,6 @@ TrajOptProbPtr ConstructProblem(const ProblemConstructionInfo& pci) {
       }
     }
   }
-
   BOOST_FOREACH(const TermInfoPtr& ci, pci.cost_infos) {
     ci->hatch(*prob);
   }

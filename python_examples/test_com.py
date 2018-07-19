@@ -18,7 +18,7 @@ def draw_ax(T, size, env, handles):
 env = Environment() # create openrave environment
 env.SetViewer('qtcoin') # attach viewer (optional)
 # viewer = trajoptpy.GetViewer(env)
-env.Load('../val_motionplanning/valkyrie_description/valkyrie_simplified.dae') # load a simple scene
+env.Load('../numl_val_motion_planning/valkyrie_description/valkyrie_simplified.dae') # load a simple scene
 # env.Load('../data/door.xml') # load a simple scene
 robot = env.GetRobots()[0] # get the first robot
 kinbody = env.GetBodies()
