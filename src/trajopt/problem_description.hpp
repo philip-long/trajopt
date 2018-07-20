@@ -235,6 +235,26 @@ struct CartDDCntInfo : public TermInfo, public MakesConstraint {
   DEFINE_CREATE(CartDDCntInfo)
 };
 
+
+
+/**
+ \brief Using a virtual guide in cartesian space to limit joint motion
+
+ Ensures a certin bubble is respected around end effectpr
+ Philip is adding this.
+ */
+struct VirtualGuideCntInfo : public TermInfo, public MakesConstraint {
+  int first_step, last_step;
+  // The link in question
+  KinBody::LinkPtr link;
+  Vector3d translational_deviation,angular_deviation;
+  Vector3d pos_coeffs, rot_coeffs;
+  void fromJson(const Value& v);
+  void hatch(TrajOptProb& prob);
+  DEFINE_CREATE(VirtualGuideCntInfo)
+};
+
+
 /**
 \brief Joint-space velocity squared
 

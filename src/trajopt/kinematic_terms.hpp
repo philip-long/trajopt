@@ -62,6 +62,22 @@ struct CartDDPoseErrCalculator : public VectorOfVector {
   VectorXd operator()(const VectorXd& dof_vals) const;
 };
 
+// Philip Adding
+struct VirtualGuideErrCalculator : public VectorOfVector {
+  ConfigurationPtr manip_;
+  OR::KinBody::LinkPtr link_;
+  Vector3d translational_deviation_,angular_deviation_;
+  VirtualGuideErrCalculator(ConfigurationPtr manip,
+                            OR::KinBody::LinkPtr link,
+                            Eigen::Vector3d translational_deviation,
+                            Eigen::Vector3d angular_deviation) :
+  manip_(manip),
+  link_(link),
+  translational_deviation_(translational_deviation),
+  angular_deviation_(angular_deviation){}
+  VectorXd operator()(const VectorXd& dof_vals) const;
+};
+
 struct CartPoseConstraintCalculator : public VectorOfVector {
 	OR::Vector plane1_;
 	OR::Vector plane2_;
