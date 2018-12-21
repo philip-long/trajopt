@@ -60,7 +60,7 @@ void RegisterMakers() {
   TermInfo::RegisterMaker("differential_pose", &CartDDCntInfo::create);
 
   // Philip Adding
-  //TermInfo::RegisterMaker("virtual_guide", &VirtualGuideCntInfo::create);
+  TermInfo::RegisterMaker("virtual_guide", &VirtualGuideCntInfo::create);
 
   gRegisteredMakers = true;
 }
@@ -538,7 +538,7 @@ void VirtualGuideCntInfo::fromJson(const Value& v){
 
 void VirtualGuideCntInfo::hatch(TrajOptProb& prob){
   for(int iStep = first_step+1; iStep < last_step; ++iStep){
-    VectorOfVectorPtr f(new  VirtualGuideErrCalculator(prob.GetRAD(), link, translational_deviation,angular_deviation));
+    VectorOfVectorPtr f(new  VirtualGuideErrCalculator(prob.GetEnv(),prob.GetRAD(), link, translational_deviation,angular_deviation));
     prob.addConstraint(ConstraintPtr(new ConstraintFromFunc(f,concat(prob.GetVarRow(iStep-1),prob.GetVarRow(iStep)),concat(rot_coeffs, pos_coeffs),EQ,name)));
     // prob.GetPlotter()->Add(PlotterPtr(new CartPoseErrorPlotter(f, prob.GetVarRow(timestep))));
     // prob.GetPlotter()->AddLink(link);
@@ -668,6 +668,7 @@ void CollisionCostInfo::hatch(TrajOptProb& prob) {
 
   CollisionCheckerPtr cc = CollisionChecker::GetOrCreate(*prob.GetEnv());
   cc->SetContactDistance(*std::max_element(dist_pen.begin(), dist_pen.end()) + .04);
+
 }
 
 

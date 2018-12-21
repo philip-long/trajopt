@@ -62,19 +62,57 @@ struct CartDDPoseErrCalculator : public VectorOfVector {
   VectorXd operator()(const VectorXd& dof_vals) const;
 };
 
-// Philip Adding
+// Philip Adding this pinv function, it looks wierd because trajopt compliation
+// is not compatible with C++ 11,
+// the original is herehttps://gist.github.com/javidcf/25066cf85e71105d57b6
+//--------------------KINEMATIC FUNCTIONS FOR VALKYRIE--------------------------//
+// This needs to be moved somewhere else---------------------------//
+template <class MatT>
+Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
+pseudoinverse(const MatT &mat, double tolerance = 0.0001) // choose appropriately
+{
+    typedef typename MatT::Scalar Scalar;
+
+    Eigen::JacobiSVD<Eigen::Matrix<Scalar,MatT::RowsAtCompileTime,MatT::ColsAtCompileTime> > svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::Matrix<Scalar,MatT::RowsAtCompileTime,1>  singularValues = svd.singularValues();
+    Eigen::Matrix<Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> singularValuesInv(mat.cols(), mat.rows());
+    singularValuesInv.setZero();
+    for (unsigned int i = 0; i < singularValues.size(); ++i) {
+        if (singularValues(i) > tolerance)
+        {
+            singularValuesInv(i, i) = 1.0/ singularValues(i);
+        }
+        else
+        {
+            singularValuesInv(i, i) =0.0;
+        }
+    }
+    return svd.matrixV() * singularValuesInv * svd.matrixU().adjoint();
+}
+
+void getJacobianTorsoRightpalm(std::vector<double> q,Eigen::Matrix<double,6,7> &J);
+void getJacobianTorsoRightelbowpitchlink(std::vector<double> q,Eigen::Matrix<double,6,7> &J);
+
 struct VirtualGuideErrCalculator : public VectorOfVector {
   ConfigurationPtr manip_;
+  OR::EnvironmentBasePtr env_;
   OR::KinBody::LinkPtr link_;
   Vector3d translational_deviation_,angular_deviation_;
-  VirtualGuideErrCalculator(ConfigurationPtr manip,
+
+
+  VirtualGuideErrCalculator(OR::EnvironmentBasePtr env,
+                            ConfigurationPtr manip,
                             OR::KinBody::LinkPtr link,
                             Eigen::Vector3d translational_deviation,
                             Eigen::Vector3d angular_deviation) :
+  env_(env),
   manip_(manip),
   link_(link),
   translational_deviation_(translational_deviation),
   angular_deviation_(angular_deviation){}
+
+
+  // I think I need to add the object name.
   VectorXd operator()(const VectorXd& dof_vals) const;
 };
 
